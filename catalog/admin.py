@@ -9,19 +9,57 @@ admin.site.register(Genre)
 # admin.site.register(BookInstance)
 admin.site.register(Language)
 
+
+# BookInline for Author detail view
+class BooksInline(admin.StackedInline):
+    model = Book
+    extra = 0
+
 # define the admin class
 class AuthorAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('last_name', 'first_name', 'date_of_birth', 'date_of_death')
+
+    fields = [
+        'first_name', 
+        'last_name', 
+        # tuple displays fields horizontally
+        ('date_of_birth', 'date_of_death')
+        ]
+    
+    inlines = [BooksInline]
 
 # register the admin class with the associated model
 admin.site.register(Author, AuthorAdmin)
 
+# BookInstanceInline
+class BooksInstanceInline(admin.TabularInline):
+        model = BookInstance
+        extra = 0 # no extra rows in BookInstancesInline table
+
+
 # register admin class for Book usint the decorator
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('title', 'author', 'display_genre')
 
+    # display related BookInstances in detail view
+    inlines = [BooksInstanceInline]
+    
 @admin.register(BookInstance)
 class BookInstanceAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('book', 'status', 'due_back')
+    list_filter = ('status', 'due_back')
+
+    # fieldsets for sectioning the detail view form
+    fieldsets = (
+        (None, {
+            "fields": (
+                'book', 'imprint', 'id'
+            ),
+        }),
+        ('Availability', {
+            "fields": ('status', 'due_back')
+        }),
+    )
+    
 

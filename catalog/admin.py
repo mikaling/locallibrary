@@ -15,7 +15,7 @@ class BooksInline(admin.StackedInline):
     model = Book
     extra = 0
 
-# define the admin class
+# define the (author) admin class
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'date_of_birth', 'date_of_death')
 
@@ -37,25 +37,23 @@ class BooksInstanceInline(admin.TabularInline):
         extra = 0 # no extra rows in BookInstancesInline table
 
 
-# register admin class for Book usint the decorator
+# register admin class for Book using the @register decorator
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'display_genre')
+    list_display = ('title', 'author', 'display_genre', 'language')
 
     # display related BookInstances in detail view
     inlines = [BooksInstanceInline]
     
 @admin.register(BookInstance)
 class BookInstanceAdmin(admin.ModelAdmin):
-    list_display = ('book', 'status', 'due_back')
+    list_display = ('book', 'status', 'due_back', 'id')
     list_filter = ('status', 'due_back')
 
     # fieldsets for sectioning the detail view form
     fieldsets = (
         (None, {
-            "fields": (
-                'book', 'imprint', 'id'
-            ),
+            "fields": ('book', 'imprint', 'id'),
         }),
         ('Availability', {
             "fields": ('status', 'due_back')
